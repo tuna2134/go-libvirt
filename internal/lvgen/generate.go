@@ -634,6 +634,9 @@ func AddProcEnumVal(name, val string, meta string) error {
 	if metaObj != nil {
 		proc.ReadStreamIdx = metaObj.ReadStream
 		proc.WriteStreamIdx = metaObj.WriteStream
+	} else {
+		proc.ReadStreamIdx = 0
+		proc.WriteStreamIdx = 0
 	}
 	Gen.Procs = append(Gen.Procs, *proc)
 	return nil
