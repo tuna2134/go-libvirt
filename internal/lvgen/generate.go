@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"go/ast"
 	"io"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -616,6 +617,15 @@ func AddProcEnumVal(name, val string, meta string) error {
 	if err != nil {
 		return fmt.Errorf("invalid enum value %v = %v", name, val)
 	}
+	if name == "REMOTE_PROC_DOMAIN_OPEN_CONSOLE" {
+		// First Split lines meta
+		lines := strings.Split(meta, "\n")
+		// add "@writestream 2" before last line
+		lines = append(lines[:len(lines)-1], "     * @writestream: 2", lines[len(lines)-1])
+		meta = strings.Join(lines, "\n")
+	}
+	log.Print(name)
+	log.Print(meta)
 	metaObj, err := parseMeta(meta)
 	if err != nil {
 		return fmt.Errorf("invalid metadata for enum value %v: %v", name, err)
@@ -634,9 +644,6 @@ func AddProcEnumVal(name, val string, meta string) error {
 	if metaObj != nil {
 		proc.ReadStreamIdx = metaObj.ReadStream
 		proc.WriteStreamIdx = metaObj.WriteStream
-	} else {
-		proc.ReadStreamIdx = 0
-		proc.WriteStreamIdx = 0
 	}
 	Gen.Procs = append(Gen.Procs, *proc)
 	return nil
